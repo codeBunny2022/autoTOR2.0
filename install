@@ -1,0 +1,82 @@
+import os
+
+def display_banner():
+    banner = """
+    ░█████╗░████████╗░█████╗░██████╗░████████╗░█████╗░██████╗░
+    ██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗
+    ██║░░██║░░░██║░░░██║░░██║██████╔╝░░░██║░░░███████║██████╔╝
+    ██║░░██║░░░██║░░░██║░░██║██╔══██╗░░░██║░░░██╔══██║██╔═══╝░
+    ╚█████╔╝░░░██║░░░╚█████╔╝██║░░██║░░░██║░░░██║░░██║██║░░░░░
+    ░╚════╝░░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░░░░
+
+    autoTOR2.0 - Enhanced by Chirag
+    """
+    print(banner)
+
+def create_service_file():
+    service_content = """
+    [Unit]
+    Description=autoTOR2.0 Service
+    After=network.target
+
+    [Service]
+    ExecStart=/usr/bin/aut
+    Restart=always
+    User=root
+
+    [Install]
+    WantedBy=multi-user.target
+    """
+    with open('/etc/systemd/system/autotor.service', 'w') as file:
+        file.write(service_content)
+
+def enable_service():
+    os.system('systemctl daemon-reload')
+    os.system('systemctl enable autotor.service')
+    os.system('systemctl start autotor.service')
+    print('[+] autoTOR2.0 service enabled to start on system reboot.')
+
+def install():
+    print('[+] Installing autoTOR2.0...')
+
+    run('chmod 777 autoTOR')
+    run('mkdir -p /usr/share/aut')
+    run('cp autoTOR /usr/share/aut/autoTOR')
+
+    cmnd = ('#!/bin/sh\nexec python3 /usr/share/aut/autoTOR "$@"')
+    with open('/usr/bin/aut', 'w') as file:
+        file.write(cmnd)
+    run('chmod +x /usr/bin/aut && chmod +x /usr/share/aut/autoTOR')
+
+    print('''\n\nCongratulations! Auto TOR 2.0 is installed successfully. 
+From now on, just type \x1b[6;30;42maut\x1b[0m in the terminal.''')
+
+    choice = input('[+] Do you want to enable autoTOR2.0 on system startup? (Y/N) >> ')
+    if choice.lower() == 'y':
+        create_service_file()
+        enable_service()
+
+def uninstall():
+    print('[+] Uninstalling autoTOR2.0...')
+
+    run('rm -r /usr/share/aut')
+    run('rm /usr/bin/aut')
+    run('systemctl disable autotor.service')
+    run('rm /etc/systemd/system/autotor.service')
+    run('systemctl daemon-reload')
+
+    print('[!] Auto TOR 2.0 has been removed successfully.')
+
+def main():
+    display_banner()
+    choice = input('[+] To install press (Y) or to uninstall press (N) >> ')
+    if choice.lower() == 'y':
+        install()
+    elif choice.lower() == 'n':
+        uninstall()
+    else:
+        print('[!] Invalid choice. Please run the script again and choose either Y or N.')
+
+if __name__ == "__main__":
+    run = os.system
+    main()

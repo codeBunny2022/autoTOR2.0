@@ -1,0 +1,91 @@
+# -*- coding: utf-8 -*-
+
+import time
+import os
+import subprocess
+import requests
+
+def ensure_pip_installed():
+    """Ensure pip3 is installed."""
+    try:
+        check_pip3 = subprocess.check_output('dpkg -s python3-pip', shell=True)
+        if 'install ok installed' in str(check_pip3):
+            pass
+    except subprocess.CalledProcessError:
+        print('[+] pip3 not installed')
+        subprocess.check_output('sudo apt update', shell=True)
+        subprocess.check_output('sudo apt install python3-pip -y', shell=True)
+        print('[!] pip3 installed successfully')
+
+def ensure_requests_installed():
+    """Ensure the 'requests' library is installed."""
+    try:
+        import requests
+    except ImportError:
+        print('[+] python3 requests is not installed')
+        os.system('pip3 install requests')
+        os.system('pip3 install requests[socks]')
+        print('[!] python3 requests is installed')
+    return requests
+
+def ensure_tor_installed():
+    """Ensure the tor service is installed."""
+    try:
+        subprocess.check_output('which tor', shell=True)
+    except subprocess.CalledProcessError:
+        print('[+] tor is not installed!')
+        subprocess.check_output('sudo apt update', shell=True)
+        subprocess.check_output('sudo apt install tor -y', shell=True)
+        print('[!] tor is installed successfully')
+
+def ma_ip():
+    """Fetch the current IP using TOR."""
+    url = 'https://api.ipify.org'
+    proxies = {
+        'http': 'socks5://127.0.0.1:9050',
+        'https': 'socks5://127.0.0.1:9050'
+    }
+    get_ip = requests.get(url, proxies=proxies)
+    return get_ip.text.strip()
+
+def change_ip():
+    """Change the current IP address by reloading the TOR service."""
+    os.system("sudo service tor reload")
+    print(f'[+] Your IP has been Changed to: {ma_ip()}')
+
+def main():
+    ensure_pip_installed()
+    global requests
+    requests = ensure_requests_installed()
+    ensure_tor_installed()
+
+    os.system("clear")
+    print('''\033[1;32;40m \n
+    		    _          _______
+     😃  /\        | |        |__   __|
+        /  \  _   _| |_ ___      | | ___  _ __
+       / /\ \| | | | __/ _ \     | |/ _ \| '__|
+      / ____ \ |_| | || (_) |    | | (_) | |
+     /_/    \_\__,_|\__\___/     |_|\___/|_|
+                     IP_X
+    enhanced by Chirag
+    ''')
+    print("https://www.chiragonweb.tech")
+
+    os.system("sudo service tor start")
+    
+    time.sleep(2)
+    os.system("sudo service tor start")
+    
+    x = input("@ enter the time intervals for IP switch in seconds (default is 2): ") or "2"
+    
+    while True:
+        try:
+            time.sleep(int(x))
+            change_ip()
+        except KeyboardInterrupt:
+            print('\nTOR auto IP changer is closed')
+            quit()
+
+if __name__ == "__main__":
+    main()
