@@ -20,8 +20,8 @@ To install autoTOR2.0, follow these steps:
 1. Clone or download the autoTOR2.0 repository.
 
     ```bash
-    git clone https://github.com/your-repo/autoTOR2.0.git
-    cd autoTOR2.0
+    [git clone https://github.com/your-repo/autoTOR2.0.git
+    cd autoTOR2.0](https://github.com/codeBunny2022/autoTOR2.0.git)
     ```
 
 2. Run the installation script:
